@@ -1,6 +1,6 @@
 
 const DB_NAME = "ProjectLavenderDB";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 let allOrders = [];
 let selectedOrder = null;

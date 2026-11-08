@@ -1,0 +1,192 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#E6E0F8">
+
+    <title>Admin Dashboard | Project Lavender</title>
+
+    <link rel="stylesheet" href="admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="admin-container">
+
+        <aside class="sidebar" id="sidebar">
+
+            <div class="sidebar-brand">
+                <span class="brand-icon">🪻</span>
+                <div>
+                    <h2>Project Lavender</h2>
+                    <p>Admin Panel</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="admin_dashboard.html" class="nav-link active">
+                    <span>⌂</span>
+                    Dashboard
+                </a>
+
+                <a href="admin_order.html" class="nav-link">
+                    <span>▤</span>
+                    Manage Orders
+                </a>
+            </nav>
+
+            <div class="sidebar-bottom">
+                <a href="admin_login.html" class="nav-link" id="logoutBtn">
+                    <span>↪</span>
+                    Logout
+                </a>
+            </div>
+
+        </aside>
+
+        <main class="main-content">
+
+            <header class="topbar">
+                <button type="button" class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+                    ☰
+                </button>
+
+                <div class="topbar-title">
+                    <h1>Dashboard</h1>
+                    <p>Welcome to the Project Lavender Admin Panel.</p>
+                </div>
+
+                <div class="admin-profile">
+                    <span class="admin-avatar">A</span>
+                    <div>
+                        <strong>Administrator</strong>
+                        <small>Admin</small>
+                    </div>
+                </div>
+            </header>
+
+            <section class="dashboard-content">
+
+                <div class="welcome-section">
+                    <h2>Overview</h2>
+                    <p>Monitor and manage student printing and photocopy orders.</p>
+                </div>
+
+                <div class="stats-container">
+
+                    <article class="stat-card">
+                        <div class="stat-icon">📋</div>
+                        <div>
+                            <p>Total Orders</p>
+                            <h3 id="totalOrders">0</h3>
+                        </div>
+                    </article>
+
+                    <article class="stat-card">
+                        <div class="stat-icon">📨</div>
+                        <div>
+                            <p>Order Submitted</p>
+                            <h3 id="submittedOrders">0</h3>
+                        </div>
+                    </article>
+
+                    <article class="stat-card">
+                        <div class="stat-icon">⚙️</div>
+                        <div>
+                            <p>Processing</p>
+                            <h3 id="processingOrders">0</h3>
+                        </div>
+                    </article>
+
+                    <article class="stat-card">
+                        <div class="stat-icon">✓</div>
+                        <div>
+                            <p>Completed</p>
+                            <h3 id="completedOrders">0</h3>
+                        </div>
+                    </article>
+
+                </div>
+
+                <section class="workflow-section">
+                    <div class="section-heading">
+                        <h2>Order Workflow</h2>
+                        <p>Track the progress of student orders.</p>
+                    </div>
+
+                    <div class="workflow-container">
+
+                        <article class="workflow-card">
+                            <span class="workflow-number">01</span>
+                            <h3>Order Submitted</h3>
+                            <p>New orders received from students.</p>
+                        </article>
+
+                        <article class="workflow-card">
+                            <span class="workflow-number">02</span>
+                            <h3>Processing</h3>
+                            <p>Orders currently being prepared.</p>
+                        </article>
+
+                        <article class="workflow-card">
+                            <span class="workflow-number">03</span>
+                            <h3>Ready for Pickup</h3>
+                            <p>Finished orders waiting for collection.</p>
+                        </article>
+
+                        <article class="workflow-card">
+                            <span class="workflow-number">04</span>
+                            <h3>Completed</h3>
+                            <p>Orders already collected by students.</p>
+                        </article>
+
+                    </div>
+                </section>
+
+                <section class="recent-orders-section">
+
+                    <div class="section-heading">
+                        <div>
+                            <h2>Recent Orders</h2>
+                            <p>Latest student printing and photocopy requests.</p>
+                        </div>
+
+                        <a href="admin_orders.html" class="view-all-btn">View All Orders</a>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Student Name</th>
+                                    <th>Order Type</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="recentOrders">
+                                <tr>
+                                    <td colspan="6" class="empty-message">
+                                        No orders available.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </section>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>

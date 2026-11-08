@@ -1,0 +1,106 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#E6E0F8">
+
+    <title>Admin Registration | Project Lavender</title>
+
+    <link rel="stylesheet" href="admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <main class="register-container">
+        <section class="register-card">
+
+            <div class="register-logo">🪻</div>
+
+            <h1>Project Lavender</h1>
+            <p class="register-subtitle">Admin Registration</p>
+
+            <h2>Create Admin Account</h2>
+            <p class="register-description">Enter your information to register.</p>
+
+            <form id="adminRegisterForm">
+
+                <div class="form-group">
+                    <label for="adminFullName">Full Name</label>
+                    <input
+                        type="text"
+                        id="adminFullName"
+                        placeholder="Enter your full name"
+                        autocomplete="name"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="adminUsername">Username</label>
+                    <input
+                        type="text"
+                        id="adminUsername"
+                        placeholder="Create a username"
+                        autocomplete="username"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="adminEmail">Email Address</label>
+                    <input
+                        type="email"
+                        id="adminEmail"
+                        placeholder="Enter your email"
+                        autocomplete="email"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="adminPassword">Password</label>
+                    <div class="password-wrapper">
+                        <input
+                            type="password"
+                            id="adminPassword"
+                            placeholder="Create a password"
+                            autocomplete="new-password"
+                            required
+                        >
+                        <button type="button" class="toggle-password" data-target="adminPassword">Show</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <div class="password-wrapper">
+                        <input
+                            type="password"
+                            id="confirmPassword"
+                            placeholder="Confirm your password"
+                            autocomplete="new-password"
+                            required
+                        >
+                        <button type="button" class="toggle-password" data-target="confirmPassword">Show</button>
+                    </div>
+                </div>
+
+                <p id="registerMessage" class="form-message" aria-live="polite"></p>
+
+                <button type="submit" class="register-btn">Create Account</button>
+
+            </form>
+
+            <p class="login-link">
+                Already have an account?
+                <a href="admin_login.html">Sign In</a>
+            </p>
+
+        </section>
+    </main>
+
+    <script src="register.js"></script>
+</body>
+</html>

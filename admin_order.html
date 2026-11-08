@@ -1,0 +1,275 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#E6E0F8">
+
+    <title>Manage Orders | Project Lavender</title>
+
+    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="orders.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="admin-container">
+
+        <aside class="sidebar" id="sidebar">
+
+            <div class="sidebar-brand">
+                <span class="brand-icon">🪻</span>
+                <div>
+                    <h2>Project Lavender</h2>
+                    <p>Admin Panel</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="admin_dashboard.html" class="nav-link">
+                    <span>⌂</span>
+                    Dashboard
+                </a>
+
+                <a href="admin_order.html" class="nav-link active">
+                    <span>▤</span>
+                    Manage Orders
+                </a>
+            </nav>
+
+            <div class="sidebar-bottom">
+                <a href="admin_login.html" class="nav-link" id="logoutBtn">
+                    <span>↪</span>
+                    Logout
+                </a>
+            </div>
+
+        </aside>
+
+        <main class="main-content">
+
+            <header class="topbar">
+                <button type="button" class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+                    ☰
+                </button>
+
+                <div class="topbar-title">
+                    <h1>Manage Orders</h1>
+                    <p>View and manage all student orders.</p>
+                </div>
+
+                <div class="admin-profile">
+                    <span class="admin-avatar">A</span>
+                    <div>
+                        <strong>Administrator</strong>
+                        <small>Admin</small>
+                    </div>
+                </div>
+            </header>
+
+            <section class="orders-content">
+
+                <div class="orders-heading">
+                    <div>
+                        <h2>Student Orders</h2>
+                        <p>Review order details and update order progress.</p>
+                    </div>
+                </div>
+
+                <div class="order-summary">
+
+                    <article class="summary-card">
+                        <p>Total Orders</p>
+                        <h3 id="totalOrders">0</h3>
+                    </article>
+
+                    <article class="summary-card">
+                        <p>Order Submitted</p>
+                        <h3 id="submittedOrders">0</h3>
+                    </article>
+
+                    <article class="summary-card">
+                        <p>Processing</p>
+                        <h3 id="processingOrders">0</h3>
+                    </article>
+
+                    <article class="summary-card">
+                        <p>Ready for Pickup</p>
+                        <h3 id="readyOrders">0</h3>
+                    </article>
+
+                    <article class="summary-card">
+                        <p>Completed</p>
+                        <h3 id="completedOrders">0</h3>
+                    </article>
+
+                </div>
+
+                <section class="orders-panel">
+
+                    <div class="orders-toolbar">
+
+                        <div class="search-box">
+                            <input
+                                type="search"
+                                id="searchOrders"
+                                placeholder="Search order ID or student name..."
+                                aria-label="Search orders"
+                            >
+                        </div>
+
+                        <div class="filter-group">
+
+                            <select id="statusFilter" aria-label="Filter by status">
+                                <option value="">All Statuses</option>
+                                <option value="Order Submitted">Order Submitted</option>
+                                <option value="Processing">Processing</option>
+                                <option value="Ready for Pickup">Ready for Pickup</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+
+                            <select id="typeFilter" aria-label="Filter by order type">
+                                <option value="">All Order Types</option>
+                                <option value="Printing">Printing</option>
+                                <option value="Photocopy">Photocopy</option>
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                    <div class="orders-table-heading">
+                        <h3>All Orders</h3>
+                        <p id="orderCount">0 orders found</p>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Student Name</th>
+                                    <th>Order Type</th>
+                                    <th>Paper Size</th>
+                                    <th>Copies</th>
+                                    <th>Date Submitted</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="ordersTable">
+                                <tr>
+                                    <td colspan="8" class="empty-message">
+                                        No orders available.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </section>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <div class="modal-overlay" id="orderModal" aria-hidden="true">
+
+        <div class="order-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+
+            <div class="modal-header">
+                <div>
+                    <h2 id="modalTitle">Order Details</h2>
+                    <p>Review student order information.</p>
+                </div>
+
+                <button type="button" class="modal-close" id="closeModal" aria-label="Close modal">
+                    &times;
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="detail-group">
+                    <label>Order ID</label>
+                    <p id="detailOrderId">—</p>
+                </div>
+
+                <div class="detail-group">
+                    <label>Student Name</label>
+                    <p id="detailStudentName">—</p>
+                </div>
+
+                <div class="detail-group">
+                    <label>Student ID</label>
+                    <p id="detailStudentId">—</p>
+                </div>
+
+                <div class="detail-group">
+                    <label>Order Type</label>
+                    <p id="detailOrderType">—</p>
+                </div>
+
+                <div class="detail-group">
+                    <label>Paper Size</label>
+                    <p id="detailPaperSize">—</p>
+                </div>
+
+                <div class="detail-group">
+                    <label>Copies</label>
+                    <p id="detailCopies">—</p>
+                </div>
+
+                <div class="detail-group">
+                    <label>Print Color</label>
+                    <p id="detailPrintColor">—</p>
+                </div>
+
+                <div class="detail-group">
+                    <label>Date Submitted</label>
+                    <p id="detailDate">—</p>
+                </div>
+
+                <div class="detail-group">
+                    <label>Uploaded File</label>
+                    <a href="#" id="detailFile" target="_blank" rel="noopener">No file available</a>
+                </div>
+
+                <div class="detail-group">
+                    <label>Additional Instructions</label>
+                    <p id="detailInstructions">—</p>
+                </div>
+
+                <div class="status-update-group">
+                    <label for="updateStatus">Update Order Status</label>
+
+                    <select id="updateStatus">
+                        <option value="Order Submitted">Order Submitted</option>
+                        <option value="Processing">Processing</option>
+                        <option value="Ready for Pickup">Ready for Pickup</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </div>
+
+                <p id="modalMessage" class="form-message" aria-live="polite"></p>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="cancel-btn" id="cancelModal">Cancel</button>
+                <button type="button" class="save-btn" id="saveStatus">Save Changes</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="dashboard.js"></script>
+    <script src="order.js"></script>
+</body>
+</html>

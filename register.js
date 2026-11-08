@@ -1,3 +1,6 @@
+
+const ADMIN_KEY = "lavenderAdminAccounts";
+
 const registerForm = document.getElementById("adminRegisterForm");
 const registerMessage = document.getElementById("registerMessage");
 
@@ -13,6 +16,14 @@ document.querySelectorAll(".toggle-password").forEach(button => {
         button.textContent = isHidden ? "Hide" : "Show";
     });
 });
+
+function getAdminAccounts() {
+    try {
+        return JSON.parse(localStorage.getItem(ADMIN_KEY)) || [];
+    } catch {
+        return [];
+    }
+}
 
 if (registerForm) {
     registerForm.addEventListener("submit", event => {
@@ -42,8 +53,37 @@ if (registerForm) {
             return;
         }
 
+        const accounts = getAdminAccounts();
+
+        const existingAccount = accounts.some(account =>
+            account.username.toLowerCase() === username.toLowerCase() ||
+            account.email.toLowerCase() === email.toLowerCase()
+        );
+
+        if (existingAccount) {
+            registerMessage.textContent =
+                "Username or email is already registered.";
+            return;
+        }
+
+        accounts.push({
+            id: Date.now(),
+            fullName,
+            username,
+            email,
+            password
+        });
+
+        localStorage.setItem(ADMIN_KEY, JSON.stringify(accounts));
+
         registerMessage.style.color = "#39966C";
         registerMessage.textContent =
-            "Form validated. Connect the registration API to create your account.";
+            "Admin account created successfully! Redirecting to login...";
+
+        registerForm.reset();
+
+        setTimeout(() => {
+            window.location.href = "admin_login.html";
+        }, 1500);
     });
 }

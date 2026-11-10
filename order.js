@@ -4,6 +4,7 @@ const DB_VERSION = 2;
 
 let allOrders = [];
 let selectedOrder = null;
+let currentFileURL = null;
 
 const $ = id => document.getElementById(id);
 
@@ -16,7 +17,7 @@ function openDatabase() {
 
             if (!db.objectStoreNames.contains("orders")) {
                 db.close();
-                reject(new Error("The orders database store does not exist."));
+                reject(new Error("Orders database store does not exist."));
                 return;
             }
 
@@ -34,38 +35,61 @@ async function getAllOrders() {
         const transaction = db.transaction("orders", "readonly");
         const request = transaction.objectStore("orders").getAll();
 
-        request.onsuccess = () => resolve(request.result);
+        request.onsuccess = () => resolve(request.result || []);
         request.onerror = () => reject(request.error);
 
         transaction.oncomplete = () => db.close();
         transaction.onerror = () => db.close();
+        transaction.onabort = () => db.close();
     });
 }
 
 function formatDate(date) {
     if (!date) return "—";
 
-    const result = new Date(date);
+    const parsedDate = new Date(date);
 
-    return Number.isNaN(result.getTime())
+    return Number.isNaN(parsedDate.getTime())
         ? "—"
-        : result.toLocaleString();
+        : parsedDate.toLocaleString();
 }
 
 function updateSummary() {
-    $("totalOrders").textContent = allOrders.length;
+    const counts = {
+        totalOrders: allOrders.length,
+        submittedOrders: 0,
+        processingOrders: 0,
+        readyOrders: 0,
+        completedOrders: 0
+    };
 
-    $("submittedOrders").textContent =
-        allOrders.filter(o => o.status === "Order Submitted").length;
+    allOrders.forEach(order => {
+        switch (order.status) {
+            case "Order Submitted":
+                counts.submittedOrders++;
+                break;
 
-    $("processingOrders").textContent =
-        allOrders.filter(o => o.status === "Processing").length;
+            case "Processing":
+                counts.processingOrders++;
+                break;
 
-    $("readyOrders").textContent =
-        allOrders.filter(o => o.status === "Ready for Pickup").length;
+            case "Ready for Pickup":
+                counts.readyOrders++;
+                break;
 
-    $("completedOrders").textContent =
-        allOrders.filter(o => o.status === "Completed").length;
+            case "Completed":
+                counts.completedOrders++;
+                break;
+        }
+    });
+
+    Object.entries(counts).forEach(([id, count]) => {
+        const element = $(id);
+
+        if (element) {
+            element.textContent = count;
+        }
+    });
 }
 
 function displayOrders() {
@@ -76,13 +100,18 @@ function displayOrders() {
     const type = $("typeFilter").value;
 
     const filteredOrders = allOrders.filter(order => {
+
         const matchesSearch =
             String(order.id || "").toLowerCase().includes(search) ||
             String(order.studentName || "").toLowerCase().includes(search);
 
-        return matchesSearch &&
-            (!status || order.status === status) &&
-            (!type || order.type === type);
+        const matchesStatus =
+            !status || order.status === status;
+
+        const matchesType =
+            !type || order.type === type;
+
+        return matchesSearch && matchesStatus && matchesType;
     });
 
     table.replaceChildren();
@@ -95,7 +124,8 @@ function displayOrders() {
         const cell = row.insertCell();
 
         cell.colSpan = 8;
-        cell.textContent = "No orders available.";
+        cell.className = "empty-message";
+        cell.textContent = "No orders found.";
 
         return;
     }
@@ -120,8 +150,8 @@ function displayOrders() {
 
         button.type = "button";
         button.textContent = "View";
-        button.dataset.orderId = order.id;
         button.className = "view-btn";
+        button.dataset.orderId = order.id;
 
         actionCell.appendChild(button);
     });
@@ -131,70 +161,153 @@ async function loadAdminOrders() {
     try {
         allOrders = await getAllOrders();
 
-        console.log("Orders retrieved:", allOrders);
-
         updateSummary();
         displayOrders();
+
+        console.log("Orders loaded:", allOrders);
 
     } catch (error) {
         console.error("Unable to load orders:", error);
 
-        $("ordersTable").innerHTML =
-            '<tr><td colspan="8">Unable to load orders. Check Console.</td></tr>';
+        const table = $("ordersTable");
+        table.replaceChildren();
+
+        const row = table.insertRow();
+        const cell = row.insertCell();
+
+        cell.colSpan = 8;
+        cell.textContent = "Unable to load orders. Check your database.";
+    }
+}
+
+function showOrderDetails(order) {
+    selectedOrder = order;
+
+    $("detailOrderId").textContent = order.id || "—";
+    $("detailStudentName").textContent = order.studentName || "—";
+    $("detailStudentId").textContent = order.studentId || "—";
+    $("detailOrderType").textContent = order.type || "—";
+    $("detailPaperSize").textContent = order.paperSize || "—";
+    $("detailCopies").textContent = order.copies ?? "—";
+    $("detailPrintColor").textContent = order.color || "—";
+    $("detailDate").textContent = formatDate(order.createdAt);
+
+    $("detailInstructions").textContent =
+        order.instructions || "No additional instructions.";
+
+    const fileLink = $("detailFile");
+
+    if (currentFileURL) {
+        URL.revokeObjectURL(currentFileURL);
+        currentFileURL = null;
+    }
+
+    fileLink.removeAttribute("href");
+    fileLink.removeAttribute("download");
+
+    if (order.file instanceof Blob) {
+        currentFileURL = URL.createObjectURL(order.file);
+
+        fileLink.href = currentFileURL;
+        fileLink.download = order.fileName || "uploaded-file";
+        fileLink.textContent = order.fileName || "Download file";
+    } else {
+        fileLink.textContent = order.fileName || "No file available";
+    }
+
+    $("updateStatus").value =
+        order.status || "Order Submitted";
+
+    $("modalMessage").textContent = "";
+
+    $("orderModal").style.display = "flex";
+    $("orderModal").setAttribute("aria-hidden", "false");
+}
+
+function closeModal() {
+    $("orderModal").style.display = "none";
+    $("orderModal").setAttribute("aria-hidden", "true");
+
+    selectedOrder = null;
+
+    if (currentFileURL) {
+        URL.revokeObjectURL(currentFileURL);
+        currentFileURL = null;
     }
 }
 
 async function saveOrderStatus() {
+
     if (!selectedOrder) {
         $("modalMessage").textContent = "No order selected.";
         return;
     }
 
     const newStatus = $("updateStatus").value;
-    const orderId = selectedOrder.id;
+    const updatedOrder = {
+        ...selectedOrder,
+        status: newStatus
+    };
+
+    const saveButton = $("saveStatus");
+
+    saveButton.disabled = true;
 
     try {
         const db = await openDatabase();
 
-        await new Promise((resolve, reject) => {
-            const transaction = db.transaction("orders", "readwrite");
+        try {
+            await new Promise((resolve, reject) => {
+                const transaction = db.transaction("orders", "readwrite");
 
-            transaction.objectStore("orders").put({
-                ...selectedOrder,
-                status: newStatus
+                transaction.objectStore("orders").put(updatedOrder);
+
+                transaction.oncomplete = resolve;
+                transaction.onerror = () => reject(transaction.error);
+                transaction.onabort = () => reject(transaction.error);
             });
+        } finally {
+            db.close();
+        }
 
-            transaction.oncomplete = resolve;
-            transaction.onerror = () => reject(transaction.error);
-            transaction.onabort = () => reject(transaction.error);
-        });
+        selectedOrder = updatedOrder;
 
-        db.close();
+        const notificationKey = "lavenderNotifications";
 
-        const notifications = JSON.parse(
-            localStorage.getItem("lavenderNotifications") || "[]"
-        );
+        let notifications = [];
+
+        try {
+            notifications = JSON.parse(
+                localStorage.getItem(notificationKey) || "[]"
+            );
+
+            if (!Array.isArray(notifications)) {
+                notifications = [];
+            }
+        } catch {
+            notifications = [];
+        }
 
         notifications.unshift({
             id: Date.now() + Math.random(),
-            studentId: selectedOrder.studentId,
-            message: `Your order ${orderId} status has been updated to ${newStatus}.`,
+            studentId: updatedOrder.studentId,
+            message: `Your order ${updatedOrder.id} status has been updated to ${newStatus}.`,
             is_read: false,
             created_at: new Date().toISOString()
         });
 
         localStorage.setItem(
-            "lavenderNotifications",
+            notificationKey,
             JSON.stringify(notifications)
         );
+
+        await loadAdminOrders();
 
         $("modalMessage").textContent =
             "Order status updated successfully!";
 
-        await loadAdminOrders();
-
         selectedOrder = allOrders.find(order =>
-            String(order.id) === String(orderId)
+            String(order.id) === String(updatedOrder.id)
         );
 
         if (selectedOrder) {
@@ -206,6 +319,8 @@ async function saveOrderStatus() {
 
         $("modalMessage").textContent =
             "Unable to update order status.";
+    } finally {
+        saveButton.disabled = false;
     }
 }
 
@@ -220,59 +335,30 @@ document.addEventListener("DOMContentLoaded", () => {
             String(item.id) === button.dataset.orderId
         );
 
-        if (!order) return;
-
-        selectedOrder = order;
-
-        $("detailOrderId").textContent = order.id || "—";
-        $("detailStudentName").textContent = order.studentName || "—";
-        $("detailStudentId").textContent = order.studentId || "—";
-        $("detailOrderType").textContent = order.type || "—";
-        $("detailPaperSize").textContent = order.paperSize || "—";
-        $("detailCopies").textContent = order.copies ?? "—";
-        $("detailPrintColor").textContent = order.color || "—";
-        $("detailDate").textContent = formatDate(order.createdAt);
-
-        $("detailInstructions").textContent =
-            order.instructions || "No additional instructions.";
-
-        const fileLink = $("detailFile");
-
-        if (order.file instanceof Blob) {
-            const fileURL = URL.createObjectURL(order.file);
-
-            fileLink.href = fileURL;
-            fileLink.download = order.fileName || "uploaded-file";
-            fileLink.textContent = order.fileName || "Download file";
-        } else {
-            fileLink.removeAttribute("href");
-            fileLink.textContent = order.fileName || "No file available";
+        if (order) {
+            showOrderDetails(order);
         }
-
-        $("updateStatus").value = order.status || "Order Submitted";
-
-        $("modalMessage").textContent = "";
-
-        $("orderModal").style.display = "flex";
-        $("orderModal").setAttribute("aria-hidden", "false");
     });
 
     $("searchOrders").addEventListener("input", displayOrders);
     $("statusFilter").addEventListener("change", displayOrders);
     $("typeFilter").addEventListener("change", displayOrders);
 
-    function closeModal() {
-        $("orderModal").style.display = "none";
-        $("orderModal").setAttribute("aria-hidden", "true");
-    }
-
     $("closeModal").addEventListener("click", closeModal);
     $("cancelModal").addEventListener("click", closeModal);
-
     $("saveStatus").addEventListener("click", saveOrderStatus);
 
     $("orderModal").addEventListener("click", event => {
         if (event.target === $("orderModal")) {
+            closeModal();
+        }
+    });
+
+    document.addEventListener("keydown", event => {
+        if (
+            event.key === "Escape" &&
+            $("orderModal").getAttribute("aria-hidden") === "false"
+        ) {
             closeModal();
         }
     });

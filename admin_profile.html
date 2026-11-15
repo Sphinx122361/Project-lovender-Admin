@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#E6E0F8">
+
+    <title>Admin Profile | Project Lavender</title>
+
+    <link rel="stylesheet" href="admin.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="admin-container">
+
+        <aside class="sidebar" id="sidebar">
+
+            <div class="sidebar-brand">
+                <span class="brand-icon">🪻</span>
+                <div>
+                    <h2>Project Lavender</h2>
+                    <p>Admin Panel</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="admin_dashboard.html" class="nav-link">
+                    <span>⌂</span>
+                    Dashboard
+                </a>
+
+                <a href="admin_order.html" class="nav-link">
+                    <span>▤</span>
+                    Manage Orders
+                </a>
+
+                <a href="admin_profile.html" class="nav-link active" aria-current="page">
+                    <span>♙</span>
+                    My Profile
+                </a>
+            </nav>
+
+            <div class="sidebar-bottom">
+                <a href="admin_login.html" class="nav-link" id="logoutBtn">
+                    <span>↪</span>
+                    Logout
+                </a>
+            </div>
+
+        </aside>
+
+        <main class="main-content">
+
+            <header class="topbar">
+
+                <button
+                    type="button"
+                    class="menu-toggle"
+                    id="menuToggle"
+                    aria-label="Toggle navigation"
+                    aria-controls="sidebar"
+                    aria-expanded="false"
+                >
+                    ☰
+                </button>
+
+                <div class="topbar-title">
+                    <h1>My Profile</h1>
+                    <p>View and manage your administrator account.</p>
+                </div>
+
+                <div class="admin-profile">
+                    <span class="admin-avatar" id="topbarAvatar">A</span>
+                    <div>
+                        <strong id="topbarName">Administrator</strong>
+                        <small>Admin</small>
+                    </div>
+                </div>
+
+            </header>
+
+            <section class="profile-content">
+
+                <section class="panel profile-panel" aria-label="Administrator profile">
+
+                    <div class="profile-container">
+
+                        <div class="profile-header">
+
+                            <div class="profile-avatar" id="profileAvatar">A</div>
+
+                            <h2 id="profileName">Administrator</h2>
+
+                            <p>System Administrator</p>
+
+                        </div>
+
+                        <div class="profile-details">
+
+                            <div class="profile-info">
+                                <span>Username</span>
+                                <p id="profileUserName">Loading...</p>
+                            </div>
+
+                            <div class="profile-info">
+                                <span>Full Name</span>
+                                <p id="profileFullName">Loading...</p>
+                            </div>
+
+                            <div class="profile-info">
+                                <span>Email Address</span>
+                                <p id="profileEmail">Not provided</p>
+                            </div>
+
+                            <div class="profile-info">
+                                <span>Password</span>
+                                <p id="profilePassword">********</p>
+                            </div>
+
+                            <div class="profile-info">
+                                <span>Staff Role</span>
+                                <p id="profileRole">Administrator</p>
+                            </div>
+
+                            <div class="profile-info">
+                                <span>Account Status</span>
+                                <p class="account-status">
+                                    <span class="status-dot online" id="statusDot"></span>
+                                    <span id="profileAccountStatus">Active</span>
+                                </p>
+                            </div>
+
+                        </div>
+
+                        <div class="profile-actions">
+
+                            <button
+                                type="button"
+                                class="secondary-button"
+                                id="changeName"
+                            >
+                                Change Full Name
+                            </button>
+
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <footer class="profile-footer">
+                    Your campus printing made simpler.
+                </footer>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <script src="profile.js" defer></script>
+
+</body>
+</html>
